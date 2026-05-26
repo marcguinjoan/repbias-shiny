@@ -310,6 +310,11 @@ css_light <- "
   .history-tbl td{padding:1px 6px;white-space:nowrap;}
   .history-tbl tr:nth-child(even){background:#ffffff;}
   .history-tbl tr:hover{background:#e8f4f8;}
+  .nsims-row{display:flex;align-items:center;gap:8px;margin-top:10px;}
+  .nsims-row .form-group{margin-bottom:0;}
+  .nsims-row input[type=number]{width:68px!important;height:26px!important;
+    font-size:11px!important;padding:2px 4px!important;}
+  .nsims-label{font-size:11px;color:#868e96;white-space:nowrap;}
 "
 
 css_dark <- "
@@ -333,6 +338,7 @@ css_dark <- "
   .history-tbl td{color:#cdd6f4!important;}
   .history-tbl tr:nth-child(even){background:#1e1e2e!important;}
   .history-tbl tr:hover{background:#24273a!important;}
+  .nsims-label{color:#6c7086!important;}
   h2,h3{color:#cba6f7!important;}
   .subtitle{color:#a6adc8!important;}
 "
@@ -447,12 +453,6 @@ ui <- navbarPage(
                 "Controls how spread out parties are on the ideological scale (0–10).
                  Low: near centre. High: at the extremes."),
 
-            div(class="sc-label", "Number of simulations"),
-            sliderInput("n_sims_sc", label=NULL, min=50, max=2000,
-                        value=300, step=50),
-            div(class="sc-hint",
-                "300 is a good default. Use 1000+ for stable estimates;
-                 50–100 for quick exploration.")
           ),
 
           # ── Electoral rules (yellow box) ───────────────────────────────────
@@ -509,6 +509,11 @@ ui <- navbarPage(
                        class="refresh-btn", style="margin-bottom:4px;"),
           actionButton("randomize_sc","🎲  Randomize all parameters",
                        class="rnd-btn"),
+          div(class="nsims-row",
+            span(class="nsims-label", "Modify the number of simulations:"),
+            numericInput("n_sims_sc", label=NULL, value=300,
+                         min=1, max=2000, step=1, width="75px")
+          ),
 
           hr(style="margin:8px 0;"),
           downloadButton("dl_sc", "⬇  Download results (.csv)", class="dl-btn")
