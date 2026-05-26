@@ -1,0 +1,14 @@
+# Generated data pools — too large for git; regenerate by running pool_*_generation.R
+data/*.rds
+
+# R session artifacts
+.Rhistory
+.RData
+.Rproj.user/
+
+# shinyapps.io deployment config (contains account credentials)
+rsconnect/
+
+# Windows system files
+desktop.ini
+**/desktop.ini
