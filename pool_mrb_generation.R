@@ -13,17 +13,26 @@ set.seed(42)
 # ---------------------------------------------------------------------------
 # 0. Output directory
 # ---------------------------------------------------------------------------
-out_dir <- tryCatch({
-  file.path(dirname(rstudioapi::getSourceEditorContext()$path), "data")
-}, error = function(e) {
-  args      <- commandArgs(trailingOnly = FALSE)
-  file_flag <- args[grepl("--file=", args)]
-  if (length(file_flag) > 0) {
-    file.path(dirname(normalizePath(sub("--file=", "", file_flag))), "data")
-  } else {
-    file.path(getwd(), "data")
-  }
-})
+# POOL_MRB_OUT_DIR can be set by a calling script (e.g. master_batch.R) to
+# guarantee the correct output path regardless of the active editor document.
+out_dir <- if (exists("POOL_MRB_OUT_DIR") && nzchar(POOL_MRB_OUT_DIR)) {
+  POOL_MRB_OUT_DIR
+} else {
+  tryCatch({
+    p <- rstudioapi::getSourceEditorContext()$path
+    # Reject master_batch.R path — it means we were sourced from there
+    if (grepl("master_batch", p, ignore.case = TRUE)) stop("sourced")
+    file.path(dirname(p), "data")
+  }, error = function(e) {
+    args      <- commandArgs(trailingOnly = FALSE)
+    file_flag <- args[grepl("--file=", args)]
+    if (length(file_flag) > 0) {
+      file.path(dirname(normalizePath(sub("--file=", "", file_flag))), "data")
+    } else {
+      file.path(getwd(), "data")
+    }
+  })
+}
 if (!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
 cat("Output directory:", out_dir, "\n")
 

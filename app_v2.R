@@ -14,7 +14,7 @@ mrb_pool <- readRDS(file.path(data_dir, "pool_mrb_summary.rds")) %>%
   filter(polarization <= 4)
 srb_pool <- readRDS(file.path(data_dir, "pool_srb_districts.rds"))
 
-MAX_POINTS <- 5000
+MAX_POINTS <- 2500
 
 # Taagepera threshold reference
 taag_ref <- data.frame(DM = 1:30) %>%

@@ -1,0 +1,6 @@
+desktop.ini
+**/desktop.ini
+pool_mrb_generation.R
+pool_srb_generation.R
+pool_scenario_generation.R
+run_batch.R
