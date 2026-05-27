@@ -315,6 +315,34 @@ css_light <- "
   .nsims-row input[type=number]{width:68px!important;height:26px!important;
     font-size:11px!important;padding:2px 4px!important;}
   .nsims-label{font-size:11px;color:#868e96;white-space:nowrap;}
+  /* Tutorial tab */
+  .tut-vs-table{border-collapse:collapse;margin-bottom:4px;}
+  .tut-vs-table th{font-size:11px;padding:2px 5px;color:#6c757d;font-weight:600;text-align:center;}
+  .tut-vs-table td{padding:1px 2px;vertical-align:middle;}
+  .tut-table{border-collapse:collapse;font-size:12.5px;width:100%;}
+  .tut-table th{background:#f1f3f5;padding:5px 10px;border:1px solid #dee2e6;
+    font-weight:600;white-space:nowrap;}
+  .tut-table td{padding:4px 10px;border:1px solid #dee2e6;}
+  .tut-table tr:nth-child(even){background:#f8f9fa;}
+  .metric-card{display:inline-block;min-width:108px;padding:6px 12px;margin:3px 3px 3px 0;
+    border-radius:6px;text-align:center;border:1px solid #dee2e6;vertical-align:top;
+    background:#f8f9fa;}
+  .metric-card .mc-label{font-size:9px;font-weight:700;text-transform:uppercase;
+    letter-spacing:.05em;color:#6c757d;line-height:1.4;}
+  .metric-card .mc-val{font-size:18px;font-weight:700;font-family:monospace;
+    line-height:1.3;color:#495057;}
+  .mc-mrb{background:#fde8e8!important;border-color:#f5c6c6!important;}
+  .mc-mrb .mc-val{color:#c0392b!important;}
+  .mc-srb{background:#e8f0fd!important;border-color:#c6d4f5!important;}
+  .mc-srb .mc-val{color:#2980b9!important;}
+  .mc-thrb{background:#fdf3e8!important;border-color:#f5d9c6!important;}
+  .mc-thrb .mc-val{color:#e67e22!important;}
+  .mc-trb{background:#edf7ed!important;border-color:#c3dfc3!important;}
+  .mc-trb .mc-val{color:#198754!important;}
+  .tut-step{background:#f8f9fa;border:1px solid #dee2e6;border-radius:6px;
+    padding:12px 16px;margin-bottom:12px;}
+  .tut-note{background:#fff9e6;border-left:3px solid #ffc107;padding:8px 12px;
+    font-size:12.5px;margin:8px 0;border-radius:0 4px 4px 0;}
 "
 
 css_dark <- "
@@ -341,6 +369,17 @@ css_dark <- "
   .nsims-label{color:#6c7086!important;}
   h2,h3{color:#cba6f7!important;}
   .subtitle{color:#a6adc8!important;}
+  .tut-table th{background:#2a2a3d!important;color:#cdd6f4!important;
+    border-color:#45475a!important;}
+  .tut-table td{border-color:#45475a!important;color:#cdd6f4!important;}
+  .tut-table tr:nth-child(even){background:#1e1e2e!important;}
+  .tut-step{background:#181825!important;border-color:#45475a!important;}
+  .metric-card{background:#181825!important;border-color:#45475a!important;}
+  .metric-card .mc-val{color:#cdd6f4!important;}
+  .mc-mrb .mc-val{color:#e8a0a0!important;}
+  .mc-srb .mc-val{color:#89b4fa!important;}
+  .mc-thrb .mc-val{color:#fab387!important;}
+  .mc-trb .mc-val{color:#a6e3a1!important;}
 "
 
 # ---------------------------------------------------------------------------
@@ -527,6 +566,218 @@ ui <- navbarPage(
         plotOutput("sc_strip",   height="80px"),
         uiOutput("sc_stats"),
         uiOutput("sc_history")
+      )
+    )
+  ),
+
+  # ==========================================================================
+  # TAB 3: Tutorial
+  # ==========================================================================
+  tabPanel("Tutorial",
+    div(style="max-width:980px;margin:0 auto;padding:20px 24px 50px;",
+
+      h2(style="font-weight:700;margin-bottom:4px;",
+         "How Representation Bias Measures Work"),
+      p(style="color:#6c757d;margin-bottom:22px;",
+        "A step-by-step walkthrough of MRB, SRB, ThRB, TRB, and Bias Share using a
+         worked example. Adjust the controls on the left to explore how each
+         institutional factor shapes the gap between voters and their representatives."),
+
+      fluidRow(
+        column(4,
+          div(style="background:#f8f9fa;border:1px solid #dee2e6;border-radius:8px;padding:16px;",
+            h5(style="font-weight:700;margin-top:0;margin-bottom:10px;",
+               "Adjust the Example"),
+            p(style="font-size:11.5px;color:#6c757d;margin-bottom:8px;",
+              tags$b("Party ideologies (fixed):"),
+              " Left = 2 · Centre = 5 · Right = 8  (0–10 scale)"),
+            div(class="sc-label", "Vote shares (%)"),
+            p(style="font-size:10.5px;color:#868e96;margin:-2px 0 4px;",
+              "Rows are auto-normalized to sum to 100."),
+            tags$table(class="tut-vs-table",
+              tags$thead(tags$tr(
+                tags$th(""), tags$th("Left"), tags$th("Centre"), tags$th("Right")
+              )),
+              tags$tbody(
+                tags$tr(
+                  tags$td(style="font-size:11px;font-weight:600;padding-right:6px;","Smallia"),
+                  tags$td(numericInput("tut_al",NULL,20,0,100,1,width="58px")),
+                  tags$td(numericInput("tut_ac",NULL,30,0,100,1,width="58px")),
+                  tags$td(numericInput("tut_ar",NULL,50,0,100,1,width="58px"))
+                ),
+                tags$tr(
+                  tags$td(style="font-size:11px;font-weight:600;padding-right:6px;","Mediana"),
+                  tags$td(numericInput("tut_bl",NULL,35,0,100,1,width="58px")),
+                  tags$td(numericInput("tut_bc",NULL,40,0,100,1,width="58px")),
+                  tags$td(numericInput("tut_br",NULL,25,0,100,1,width="58px"))
+                ),
+                tags$tr(
+                  tags$td(style="font-size:11px;font-weight:600;padding-right:6px;","Largua"),
+                  tags$td(numericInput("tut_cl",NULL,50,0,100,1,width="58px")),
+                  tags$td(numericInput("tut_cc",NULL,35,0,100,1,width="58px")),
+                  tags$td(numericInput("tut_cr",NULL,15,0,100,1,width="58px"))
+                )
+              )
+            ),
+            br(),
+            div(class="sc-label", "Seats per district"),
+            p(style="font-size:10.5px;color:#868e96;margin:-2px 0 4px;",
+              "Proportional allocation would give 1 / 3 / 6. Equal seats (default) ",
+              "over-represent Smallia (small, right-leaning)."),
+            fluidRow(
+              column(4, numericInput("tut_seats_a","Smallia",3,1,20,1)),
+              column(4, numericInput("tut_seats_b","Mediana",3,1,20,1)),
+              column(4, numericInput("tut_seats_c","Largua", 3,1,20,1))
+            ),
+            div(class="sc-label", "Electoral formula"),
+            selectInput("tut_formula",NULL,
+              choices=c("D'Hondt"="dhondt","Sainte-Laguë"="sainte_lague",
+                        "Hare (LR)"="hare","Droop (LR)"="droop"),
+              selected="dhondt"),
+            div(class="sc-label", "Electoral threshold (%)"),
+            sliderInput("tut_th",NULL,min=0,max=30,value=0,step=1),
+            div(class="sc-hint",
+              "Try 22% to exclude Left from Smallia and see how ThRB shifts IR.")
+          )
+        ),
+        column(8, uiOutput("tut_out"))
+      ),
+
+      hr(style="margin:32px 0;"),
+
+      h3(style="font-weight:700;border-bottom:2px solid #dee2e6;padding-bottom:6px;
+                margin-bottom:14px;",
+         "Interpreting the Bias Share"),
+      p("Bias Share measures how much each institutional factor contributes to the",
+        tags$em("total distortion"),
+        "— the sum of all absolute biases. It is", tags$strong("not"),
+        "the share of the net bias (TRB), but of |MRB| + |SRB| + |ThRB|."),
+      p("This distinction matters when biases point in",
+        tags$strong("opposite directions"),
+        ": even if MRB and SRB partially cancel in TRB, both still receive a large
+         Bias Share — correctly reflecting that each institution is actively
+         distorting representation, just in opposite directions."),
+
+      fluidRow(
+        column(6,
+          div(class="tut-step",
+            div(style="font-weight:700;color:#198754;margin-bottom:8px;",
+                "Scenario A — Additive biases (all rightward)"),
+            tags$table(class="tut-table",
+              tags$thead(tags$tr(
+                tags$th("Component"),tags$th("Value"),
+                tags$th("Direction"),tags$th("|Bias|"),tags$th("Share")
+              )),
+              tags$tbody(
+                tags$tr(tags$td("MRB"),tags$td("+0.48"),
+                  tags$td(style="color:#c0392b;font-weight:600;","rightward ▶"),
+                  tags$td("0.48"),tags$td("64.0%")),
+                tags$tr(tags$td("SRB"),tags$td("+0.15"),
+                  tags$td(style="color:#c0392b;font-weight:600;","rightward ▶"),
+                  tags$td("0.15"),tags$td("20.0%")),
+                tags$tr(tags$td("ThRB"),tags$td("+0.12"),
+                  tags$td(style="color:#c0392b;font-weight:600;","rightward ▶"),
+                  tags$td("0.12"),tags$td("16.0%")),
+                tags$tr(style="font-weight:700;background:#f1f3f5;",
+                  tags$td("TRB"),tags$td("+0.75"),
+                  tags$td("rightward ▶"),tags$td("0.75"),tags$td("—"))
+              )
+            ),
+            div(class="tut-note",style="border-left-color:#198754;background:#edf7ed;",
+              "All institutions amplify the same rightward bias. |TRB| equals the
+               sum of all components. Bias Share identifies malapportionment
+               as the dominant factor (64%).")
+          )
+        ),
+        column(6,
+          div(class="tut-step",
+            div(style="font-weight:700;color:#e67e22;margin-bottom:8px;",
+                "Scenario B — Opposing biases (MRB leftward, SRB/ThRB rightward)"),
+            tags$table(class="tut-table",
+              tags$thead(tags$tr(
+                tags$th("Component"),tags$th("Value"),
+                tags$th("Direction"),tags$th("|Bias|"),tags$th("Share")
+              )),
+              tags$tbody(
+                tags$tr(tags$td("MRB"),tags$td("−0.35"),
+                  tags$td(style="color:#2980b9;font-weight:600;","◀ leftward"),
+                  tags$td("0.35"),tags$td("53.8%")),
+                tags$tr(tags$td("SRB"),tags$td("+0.20"),
+                  tags$td(style="color:#c0392b;font-weight:600;","rightward ▶"),
+                  tags$td("0.20"),tags$td("30.8%")),
+                tags$tr(tags$td("ThRB"),tags$td("+0.10"),
+                  tags$td(style="color:#c0392b;font-weight:600;","rightward ▶"),
+                  tags$td("0.10"),tags$td("15.4%")),
+                tags$tr(style="font-weight:700;background:#f1f3f5;",
+                  tags$td("TRB"),tags$td("−0.05"),
+                  tags$td("◀ leftward"),tags$td("0.05"),tags$td("—"))
+              )
+            ),
+            div(class="tut-note",
+              "Malapportionment is leftward; seat allocation and threshold are
+               rightward — they largely cancel. |TRB| = 0.05 yet total distortion
+               is 0.65. Bias Share still sums to 100%, revealing each institution's
+               separate contribution despite near-zero net bias.")
+          )
+        )
+      ),
+      p(style="font-size:13px;color:#495057;",
+        tags$strong("Key takeaway: "),
+        "Scenario B looks almost neutral on TRB alone. Bias Share reveals that
+         malapportionment and the electoral formula are generating substantial
+         opposing distortions that happen to offset each other. Institutions
+         that cancel are not 'working well' — they create opposite pressures
+         that can decouple when the political context changes."),
+
+      hr(style="margin:32px 0;"),
+
+      h3(style="font-weight:700;border-bottom:2px solid #dee2e6;padding-bottom:6px;
+                margin-bottom:14px;",
+         "Methodological Notes"),
+      fluidRow(
+        column(6,
+          div(class="tut-step",
+            h5(style="font-weight:700;margin-top:0;","Simulation design"),
+            tags$ul(style="font-size:13px;line-height:1.75;padding-left:18px;",
+              tags$li(tags$strong("Country structure: "),
+                "100 districts, each with the same district magnitude (DM). This
+                 isolates the pure mechanical effect of DM from other sources of
+                 variation."),
+              tags$li(tags$strong("Party system: "),
+                "2–6 parties per simulation (10/20/30/25/15% probabilities). Party
+                 ideologies follow a ", tags$em("Beta(2.5, 2.5) × 10"),
+                " distribution — moderate positions are most likely; extreme positions
+                 have low probability."),
+              tags$li(tags$strong("Vote shares: "),
+                "Each district's vote shares are drawn independently from a ",
+                tags$em("Dirichlet(1.5)"), " distribution, implying no spatial
+                 correlation between districts."),
+              tags$li(tags$strong("Seat allocation: "),
+                "D'Hondt by default. The electoral threshold is applied uniformly
+                 to all districts at the same level before seat allocation.")
+            )
+          )
+        ),
+        column(6,
+          div(class="tut-step",
+            h5(style="font-weight:700;margin-top:0;","Malapportionment scenarios"),
+            tags$ul(style="font-size:13px;line-height:1.75;padding-left:18px;",
+              tags$li(tags$strong("Random: "),
+                "Over-represented districts are selected randomly with no relationship
+                 to their ideological composition. The expected MRB is zero."),
+              tags$li(tags$strong("Concentrated: "),
+                "Either the left-leaning or the right-leaning bloc is systematically
+                 over-represented — a logically extreme case that maximises MRB for
+                 a given MAL level."),
+              tags$li(
+                "In practice, malapportionment rarely benefits one ideological bloc
+                 consistently. Beramendi, Boix, Guinjoan & Rogers (2021) show that
+                 institutional biases are more complex and context-dependent than
+                 either scenario implies. The two scenarios therefore bound the
+                 realistic distribution of MRB.")
+            )
+          )
+        )
       )
     )
   )
@@ -1148,6 +1399,221 @@ server <- function(input, output, session) {
       write.csv(d, f, row.names = FALSE)
     }
   )
+
+  # ==========================================================================
+  # TUTORIAL TAB
+  # ==========================================================================
+
+  tut_calc <- reactive({
+    vs_raw <- matrix(c(
+      max(0, input$tut_al), max(0, input$tut_ac), max(0, input$tut_ar),
+      max(0, input$tut_bl), max(0, input$tut_bc), max(0, input$tut_br),
+      max(0, input$tut_cl), max(0, input$tut_cc), max(0, input$tut_cr)
+    ), nrow=3, ncol=3, byrow=TRUE)
+    rs <- rowSums(vs_raw)
+    req(all(rs > 0))
+    vs <- vs_raw / rs
+
+    pop   <- c(100000, 300000, 600000)
+    ideol <- c(2.0, 5.0, 8.0)
+    seats <- c(max(1L, as.integer(input$tut_seats_a)),
+               max(1L, as.integer(input$tut_seats_b)),
+               max(1L, as.integer(input$tut_seats_c)))
+    th    <- input$tut_th / 100
+    fn    <- get_alloc_fn(input$tut_formula)
+
+    IS_d   <- as.numeric(vs %*% ideol)
+    IP     <- weighted.mean(IS_d, w=pop)
+    IS_nat <- weighted.mean(IS_d, w=seats)
+    MRB    <- IS_nat - IP
+
+    seats_b <- do.call(rbind, lapply(1:3, function(d) fn(vs[d,], seats[d])))
+    nat_b   <- colSums(seats_b)
+    IR_base <- if (sum(nat_b) > 0) weighted.mean(ideol, w=nat_b) else NA_real_
+    SRB     <- if (!is.na(IR_base)) IR_base - IS_nat else NA_real_
+
+    seats_t <- do.call(rbind, lapply(1:3, function(d) {
+      vf <- ifelse(vs[d,] < th, 0, vs[d,])
+      if (sum(vf) == 0) vf <- vs[d,]
+      fn(vf, seats[d])
+    }))
+    nat_t  <- colSums(seats_t)
+    IR_th  <- if (sum(nat_t) > 0) weighted.mean(ideol, w=nat_t) else NA_real_
+    ThRB   <- if (!is.na(IR_th) && !is.na(IR_base)) IR_th - IR_base else NA_real_
+    TRB    <- if (!is.na(IR_th)) IR_th - IP else NA_real_
+
+    aM  <- abs(MRB)
+    aS  <- if (!is.na(SRB))  abs(SRB)  else 0
+    aT  <- if (!is.na(ThRB)) abs(ThRB) else 0
+    tot <- aM + aS + aT
+
+    list(vs=vs, seats=seats, IS_d=IS_d, IP=IP, IS_nat=IS_nat, MRB=MRB,
+         seats_b=seats_b, nat_b=nat_b, IR_base=IR_base, SRB=SRB,
+         seats_t=seats_t, nat_t=nat_t, IR_th=IR_th, ThRB=ThRB, TRB=TRB,
+         th=th, formula=input$tut_formula,
+         BS_MRB  = if (tot>1e-9) aM/tot  else NA_real_,
+         BS_SRB  = if (tot>1e-9) aS/tot  else NA_real_,
+         BS_ThRB = if (tot>1e-9) aT/tot  else NA_real_,
+         aM=aM, aS=aS, aT=aT, tot=tot)
+  })
+
+  output$tut_out <- renderUI({
+    tc <- tut_calc()
+
+    fmt  <- function(x) if (is.na(x)) "—" else sprintf("%.3f", x)
+    sgn  <- function(x) if (is.na(x)) "—" else if (x >= 0) sprintf("+%.3f",x) else sprintf("%.3f",x)
+    pct  <- function(x) if (is.na(x)) "—" else sprintf("%.1f%%", 100*x)
+    dlbl <- function(x) {
+      if (is.na(x) || abs(x) < 0.005) "≈ 0"
+      else if (x > 0) "rightward ▶" else "◀ leftward"
+    }
+    dcol <- function(x) {
+      if (is.na(x) || abs(x) < 0.005) "#868e96"
+      else if (x > 0) "#c0392b" else "#2980b9"
+    }
+
+    pop_v <- c(100000, 300000, 600000)
+    nm    <- c("Smallia", "Mediana", "Largua")
+
+    # ---- District breakdown table ----
+    th_col_lbl <- if (tc$th > 0)
+      paste0("After TH=", round(100*tc$th), "% (L|C|R)")
+    else "After threshold"
+
+    dist_rows <- lapply(1:3, function(d) {
+      vs_pct <- paste0(round(100*tc$vs[d,1]),"% / ",
+                       round(100*tc$vs[d,2]),"% / ",
+                       round(100*tc$vs[d,3]),"%")
+      sb <- paste0(tc$seats_b[d,1],"|",tc$seats_b[d,2],"|",tc$seats_b[d,3])
+      st <- if (tc$th > 0)
+              paste0(tc$seats_t[d,1],"|",tc$seats_t[d,2],"|",tc$seats_t[d,3])
+            else "—"
+      tags$tr(
+        tags$td(style="font-weight:600;", nm[d]),
+        tags$td(format(pop_v[d],big.mark=",")),
+        tags$td(tc$seats[d]),
+        tags$td(vs_pct),
+        tags$td(sprintf("%.2f", tc$IS_d[d])),
+        tags$td(style="font-family:monospace;", sb),
+        tags$td(style="font-family:monospace;", st)
+      )
+    })
+    nat_row <- tags$tr(style="font-weight:700;background:#f1f3f5;",
+      tags$td("National"), tags$td("1,000,000"),
+      tags$td(sum(tc$seats)), tags$td("—"),
+      tags$td(sprintf("%.2f", tc$IS_nat)),
+      tags$td(style="font-family:monospace;",
+              paste0(tc$nat_b[1],"|",tc$nat_b[2],"|",tc$nat_b[3])),
+      tags$td(style="font-family:monospace;",
+              if (tc$th > 0)
+                paste0(tc$nat_t[1],"|",tc$nat_t[2],"|",tc$nat_t[3])
+              else "—")
+    )
+
+    dist_tbl <- div(style="overflow-x:auto;margin-bottom:12px;",
+      tags$table(class="tut-table", style="font-size:12px;",
+        tags$thead(tags$tr(
+          tags$th("District"), tags$th("Population"), tags$th("Seats"),
+          tags$th("Votes L/C/R"), tags$th("IS"),
+          tags$th("Seats D'Hondt (L|C|R)"), tags$th(th_col_lbl)
+        )),
+        tags$tbody(c(dist_rows, list(nat_row)))
+      )
+    )
+
+    # ---- MAL index note ----
+    mal_idx <- 0.5 * sum(abs(tc$seats/sum(tc$seats) - pop_v/sum(pop_v)))
+    mal_note <- div(style="font-size:11px;color:#6c757d;margin-bottom:10px;",
+      sprintf("Malapportionment index (MAL) = %.3f  |  0 = perfectly proportional · 0.5 = extreme", mal_idx)
+    )
+
+    # ---- Metric cards ----
+    card <- function(lbl, val, cls, use_sgn=TRUE) {
+      v_txt <- if (use_sgn) sgn(val) else fmt(val)
+      div(class=paste("metric-card", cls),
+        div(class="mc-label", lbl),
+        div(class="mc-val", v_txt)
+      )
+    }
+
+    metrics <- div(style="display:flex;flex-wrap:wrap;gap:0;margin:10px 0 8px;",
+      card("IP  (voters)",      tc$IP,      "mc-ip",   FALSE),
+      card("IS  (districts)",   tc$IS_nat,  "mc-is",   FALSE),
+      div(style="width:100%;height:0;flex-basis:100%;"),
+      card("MRB = IS − IP",     tc$MRB,     "mc-mrb"),
+      card("IR  (legislators)", tc$IR_base, "mc-ir",   FALSE),
+      card("SRB = IR − IS",     tc$SRB,     "mc-srb"),
+      card("ThRB",              tc$ThRB,    "mc-thrb"),
+      div(style="width:100%;height:0;flex-basis:100%;"),
+      card("TRB = IR₁ − IP", tc$TRB,  "mc-trb")
+    )
+
+    # ---- Bias Share bar ----
+    bs_ui <- if (tc$tot > 1e-9) {
+      bsm <- max(0, round(100 * tc$BS_MRB))
+      bss <- max(0, round(100 * tc$BS_SRB))
+      bst <- max(0, 100 - bsm - bss)
+      mk_seg <- function(w, bg, lbl) {
+        if (w <= 0) return(NULL)
+        div(style=paste0("width:",w,"%;background:",bg,";display:flex;align-items:center;
+                          justify-content:center;"),
+            if (w > 6) span(style="color:#fff;font-size:10px;font-weight:700;", lbl) else NULL)
+      }
+      div(style="margin-bottom:14px;",
+        div(style="font-size:11px;font-weight:700;color:#6c757d;text-transform:uppercase;
+                   letter-spacing:.04em;margin-bottom:4px;",
+            "Bias Share  —  % of total |distortion|"),
+        div(style="display:flex;height:26px;border-radius:4px;overflow:hidden;border:1px solid #dee2e6;",
+            mk_seg(bsm, "#c0392b", paste0(bsm,"%")),
+            mk_seg(bss, "#2980b9", paste0(bss,"%")),
+            mk_seg(bst, "#e67e22", paste0(bst,"%"))
+        ),
+        div(style="display:flex;font-size:11px;font-weight:600;margin-top:3px;",
+          div(style="flex:1;color:#c0392b;", paste0("MRB:  ", pct(tc$BS_MRB))),
+          div(style="flex:1;color:#2980b9;", paste0("SRB:  ", pct(tc$BS_SRB))),
+          div(style="flex:1;color:#e67e22;", paste0("ThRB: ", pct(tc$BS_ThRB)))
+        )
+      )
+    } else {
+      p(style="color:#868e96;font-style:italic;font-size:12px;",
+        "All biases are zero — Bias Share is undefined.")
+    }
+
+    # ---- Interpretation ----
+    ir_lbl <- if (!is.na(tc$IR_th) && tc$th > 0) fmt(tc$IR_th) else fmt(tc$IR_base)
+    interp <- div(style="background:#f8f9fa;border:1px solid #dee2e6;border-radius:6px;
+                          padding:10px 14px;font-size:12.5px;margin-top:2px;",
+      tags$strong("Reading the numbers:"),
+      tags$ul(style="margin:4px 0 0;",
+        tags$li(
+          tags$b(paste0("MRB = ", sgn(tc$MRB))),
+          tags$span(style=paste0("color:",dcol(tc$MRB),";font-weight:600;"),
+                    paste0(" (", dlbl(tc$MRB), ")")),
+          " — IS (district-seat-weighted mean) is ", fmt(tc$IS_nat),
+          "; IP (population-weighted mean) is ", fmt(tc$IP), "."
+        ),
+        tags$li(
+          tags$b(paste0("SRB = ", sgn(tc$SRB))),
+          tags$span(style=paste0("color:",dcol(tc$SRB),";font-weight:600;"),
+                    paste0(" (", dlbl(tc$SRB), ")")),
+          " — D'Hondt gives L=", tc$nat_b[1], " / C=", tc$nat_b[2],
+          " / R=", tc$nat_b[3], " national seats. IR = ", fmt(tc$IR_base), "."
+        ),
+        if (tc$th > 0)
+          tags$li(
+            tags$b(paste0("ThRB = ", sgn(tc$ThRB))),
+            tags$span(style=paste0("color:",dcol(tc$ThRB),";font-weight:600;"),
+                      paste0(" (", dlbl(tc$ThRB), ")")),
+            " — Applying ", round(100*tc$th), "% threshold shifts IR from ",
+            fmt(tc$IR_base), " to ", fmt(tc$IR_th), "."
+          )
+        else
+          tags$li("ThRB = 0 — no threshold applied (move the slider to see its effect).")
+      )
+    )
+
+    tagList(mal_note, dist_tbl, metrics, bs_ui, interp)
+  })
 }
 
 shinyApp(ui, server)
